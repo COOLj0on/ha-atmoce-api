@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Atmoce Cloud",
+        "description": "Connect to the official Atmoce Cloud API.",
+        "data": {
+          "username": "Atmoce account email",
+          "password": "Atmoce account password",
+          "site_id": "Gateway or site ID"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "The Atmoce account credentials were rejected.",
+      "invalid_device_id": "The gateway or site ID must be numeric.",
+      "cannot_connect": "Unable to connect to the Atmoce Cloud API."
+    }
+  }
+}

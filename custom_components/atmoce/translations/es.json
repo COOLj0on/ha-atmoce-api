@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Atmoce Cloud",
+        "description": "Conéctese a la API Cloud oficial de Atmoce.",
+        "data": {
+          "username": "Correo de la cuenta Atmoce",
+          "password": "Contraseña de la cuenta Atmoce",
+          "site_id": "ID de la pasarela o del sitio"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Las credenciales de la cuenta Atmoce han sido rechazadas.",
+      "invalid_device_id": "El ID de la pasarela o del sitio debe ser numérico.",
+      "cannot_connect": "No se puede conectar a la API Cloud de Atmoce."
+    }
+  }
+}
