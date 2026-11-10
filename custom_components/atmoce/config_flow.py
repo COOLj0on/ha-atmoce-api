@@ -67,7 +67,7 @@ class AtmoceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             password = user_input[CONF_PASSWORD]
             site_id = user_input[CONF_SITE_ID].strip()
 
-            validation_error = self._validate_credentials(username, password, site_id)
+            validation_error = await self._validate_credentials(username, password, site_id)
             if validation_error:
                 errors["base"] = validation_error
                 return self.async_show_form(
@@ -94,7 +94,7 @@ class AtmoceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     @staticmethod
-    def _validate_credentials(username: str, password: str, site_id: str) -> str | None:
+    async def _validate_credentials(username: str, password: str, site_id: str) -> str | None:
         """Validate device ID format and cloud API credentials.
 
         Args:
@@ -110,8 +110,7 @@ class AtmoceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         except ValueError:
             return "invalid_device_id"
 
-        # Validate credentials asynchronously
-        return asyncio.run(_validate_api_credentials(username, password, site_id))
+        return await _validate_api_credentials(username, password, site_id)
 
     @staticmethod
     @callback
