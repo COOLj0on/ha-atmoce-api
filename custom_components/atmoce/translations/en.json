@@ -16,5 +16,57 @@
       "invalid_device_id": "The gateway or site ID must be numeric.",
       "cannot_connect": "Unable to connect to the Atmoce Cloud API."
     }
+  },
+  "entity": {
+    "sensor": {
+      "grid_voltage": {"name": "Grid voltage"},
+      "daily_demand": {"name": "Daily energy demand"},
+      "total_demand": {"name": "Total energy demand"},
+      "grid_current": {"name": "Grid current"},
+      "grid_power": {"name": "Grid power"},
+      "grid_energy_daily": {"name": "Daily energy imported from the grid"},
+      "grid_energy_total": {"name": "Total energy imported from the grid"},
+      "elec_sales_daily": {"name": "Daily electricity exported"},
+      "elec_sales_total": {"name": "Total electricity exported"},
+      "pv_power": {"name": "Solar power"},
+      "pv_energy_daily": {"name": "Daily solar energy produced"},
+      "pv_energy_total": {"name": "Total solar energy produced"},
+      "pv_self_consumption_rate": {"name": "Solar self-consumption rate"},
+      "battery_soc": {"name": "Battery charge level"},
+      "battery_power": {"name": "Battery power"},
+      "battery_status": {
+        "name": "Battery status",
+        "state": {
+          "charging": "Charging",
+          "discharging": "Discharging",
+          "idle": "Idle"
+        }
+      },
+      "battery_mode": {
+        "name": "Battery operating mode",
+        "state": {
+          "self_consumption": "Self-consumption",
+          "tou": "Time-of-use",
+          "remote_control": "Remote control"
+        }
+      },
+      "battery_dispatch_power": {"name": "Battery power command"},
+      "battery_charged_daily": {"name": "Daily energy stored in the battery"},
+      "battery_discharged_daily": {"name": "Daily energy supplied by the battery"},
+      "battery_charged_total": {"name": "Total energy stored in the battery"},
+      "battery_discharged_total": {"name": "Total energy supplied by the battery"},
+      "autonomy_hours": {"name": "Estimated battery runtime"},
+      "station_status": {
+        "name": "System status",
+        "state": {
+          "normal": "Normal",
+          "fault": "Fault"
+        }
+      },
+      "active_source": {
+        "name": "Data source"
+      },
+      "connection_errors": {"name": "Connection error count"}
+    }
   }
 }

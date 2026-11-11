@@ -15,6 +15,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .cloud_client import AtmoceCloudClient, AtmoceCloudError
 from .const import (
     CONF_PASSWORD,
+    CONF_SCAN_INTERVAL,
     CONF_SITE_ID,
     CONF_USERNAME,
     DEFAULT_SCAN_INTERVAL,
@@ -40,7 +41,9 @@ class AtmoceCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             _LOGGER,
             config_entry=config_entry,
             name=DOMAIN,
-            update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
+            update_interval=timedelta(
+                minutes=config_entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL // 60)
+            ),
         )
         self.serial_number = config_entry.data[CONF_SITE_ID]
         self.battery_model = "Cloud API"

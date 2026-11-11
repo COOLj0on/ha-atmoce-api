@@ -15,14 +15,36 @@ from homeassistant.helpers import selector
 
 from .cloud_client import AtmoceCloudAuthError, AtmoceCloudClient, AtmoceCloudError
 from .const import (
+    CONF_ENABLED_SENSORS,
     CONF_PASSWORD,
+    CONF_SCAN_INTERVAL,
     CONF_SITE_ID,
     CONF_USERNAME,
+    DEFAULT_SCAN_INTERVAL,
     DOMAIN,
 )
+from .sensor import SENSOR_DESCRIPTIONS
 
 _PASSWORD_SELECTOR = selector.TextSelector(
     selector.TextSelectorConfig(type="password")  # type: ignore[typeddict-item]
+)
+_SENSOR_SELECTOR = selector.SelectSelector(
+    selector.SelectSelectorConfig(
+        options=[
+            {"value": description.key, "label": description.name}
+            for description in SENSOR_DESCRIPTIONS
+        ],
+        multiple=True,
+    )
+)
+_SCAN_INTERVAL_SELECTOR = selector.NumberSelector(
+    selector.NumberSelectorConfig(
+        min=1,
+        max=1440,
+        step=1,
+        unit_of_measurement="min",
+        mode=selector.NumberSelectorMode.BOX,  # type: ignore[typeddict-item]
+    )
 )
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,13 +55,21 @@ class AtmoceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     @staticmethod
-    def _get_schema(username: str = "", password: str = "", site_id: str = "") -> vol.Schema:
+    def _get_schema(
+        username: str = "",
+        password: str = "",
+        site_id: str = "",
+        enabled_sensors: list[str] | None = None,
+        scan_interval: int = DEFAULT_SCAN_INTERVAL // 60,
+    ) -> vol.Schema:
         """Build the configuration schema with optional defaults.
 
         Args:
             username: Default username value.
             password: Default password value.
             site_id: Default site ID value.
+            enabled_sensors: Sensor keys to create.
+            scan_interval: Polling interval in minutes.
 
         Returns:
             Voluptuous schema for the configuration form.
@@ -49,10 +79,19 @@ class AtmoceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_USERNAME, default=username): str,
                 vol.Required(CONF_PASSWORD, default=password): _PASSWORD_SELECTOR,
                 vol.Required(CONF_SITE_ID, default=site_id): str,
+                vol.Required(
+                    CONF_ENABLED_SENSORS,
+                    default=(
+                        enabled_sensors
+                        if enabled_sensors is not None
+                        else [description.key for description in SENSOR_DESCRIPTIONS]
+                    ),
+                ): _SENSOR_SELECTOR,
+                vol.Required(CONF_SCAN_INTERVAL, default=scan_interval): _SCAN_INTERVAL_SELECTOR,
             }
         )
 
-    async def async_step_user(self, user_input: dict[str, str] | None = None) -> ConfigFlowResult:
+    async def async_step_user(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Handle the initial user setup step.
 
         Args:
@@ -72,7 +111,13 @@ class AtmoceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = validation_error
                 return self.async_show_form(
                     step_id="user",
-                    data_schema=self._get_schema(username, password, site_id),
+                    data_schema=self._get_schema(
+                        username,
+                        password,
+                        site_id,
+                        user_input[CONF_ENABLED_SENSORS],
+                        user_input[CONF_SCAN_INTERVAL],
+                    ),
                     errors=errors,
                 )
 
@@ -84,6 +129,10 @@ class AtmoceConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     CONF_USERNAME: username,
                     CONF_PASSWORD: password,
                     CONF_SITE_ID: site_id,
+                },
+                options={
+                    CONF_ENABLED_SENSORS: user_input[CONF_ENABLED_SENSORS],
+                    CONF_SCAN_INTERVAL: user_input[CONF_SCAN_INTERVAL],
                 },
             )
 
@@ -152,9 +201,9 @@ async def _validate_api_credentials(username: str, password: str, site_id: str) 
 
 
 class AtmoceOptionsFlow(config_entries.OptionsFlow):
-    """Allow API credentials and site ID to be changed."""
+    """Allow credentials, sensor selection, and polling interval to be changed."""
 
-    async def async_step_init(self, user_input: dict[str, str] | None = None) -> ConfigFlowResult:
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         """Handle the options flow.
 
         Args:
@@ -183,6 +232,11 @@ class AtmoceOptionsFlow(config_entries.OptionsFlow):
                     CONF_PASSWORD: user_input[CONF_PASSWORD],
                     CONF_SITE_ID: user_input[CONF_SITE_ID].strip(),
                 },
+                options={
+                    **self.config_entry.options,
+                    CONF_ENABLED_SENSORS: user_input[CONF_ENABLED_SENSORS],
+                    CONF_SCAN_INTERVAL: user_input[CONF_SCAN_INTERVAL],
+                },
             )
             return self.async_create_entry(title="", data={})
 
@@ -195,19 +249,14 @@ class AtmoceOptionsFlow(config_entries.OptionsFlow):
             Voluptuous schema for the options form.
         """
         current: dict[str, Any] = dict(self.config_entry.data)
-        return vol.Schema(
-            {
-                vol.Required(
-                    CONF_USERNAME,
-                    default=current.get(CONF_USERNAME, ""),
-                ): str,
-                vol.Required(
-                    CONF_PASSWORD,
-                    default=current.get(CONF_PASSWORD, ""),
-                ): _PASSWORD_SELECTOR,
-                vol.Required(
-                    CONF_SITE_ID,
-                    default=current.get(CONF_SITE_ID, ""),
-                ): str,
-            }
+        options: dict[str, Any] = dict(self.config_entry.options)
+        return AtmoceConfigFlow._get_schema(
+            username=current.get(CONF_USERNAME, ""),
+            password=current.get(CONF_PASSWORD, ""),
+            site_id=current.get(CONF_SITE_ID, ""),
+            enabled_sensors=options.get(
+                CONF_ENABLED_SENSORS,
+                [description.key for description in SENSOR_DESCRIPTIONS],
+            ),
+            scan_interval=options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL // 60),
         )

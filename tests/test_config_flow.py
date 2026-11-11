@@ -1,21 +1,27 @@
 """Tests for the Atmoce Cloud API config flow."""
+
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
-from custom_components.atmoce.config_flow import AtmoceConfigFlow
 from custom_components.atmoce.cloud_client import AtmoceCloudAuthError
+from custom_components.atmoce.config_flow import AtmoceConfigFlow, AtmoceOptionsFlow
 from custom_components.atmoce.const import (
+    CONF_ENABLED_SENSORS,
     CONF_PASSWORD,
+    CONF_SCAN_INTERVAL,
     CONF_SITE_ID,
     CONF_USERNAME,
+    DEFAULT_SCAN_INTERVAL,
 )
-
+from custom_components.atmoce.sensor import SENSOR_DESCRIPTIONS
 
 USER_INPUT = {
     CONF_USERNAME: " user@example.com ",
     CONF_PASSWORD: "secret",
     CONF_SITE_ID: "123456",
+    CONF_ENABLED_SENSORS: [description.key for description in SENSOR_DESCRIPTIONS],
+    CONF_SCAN_INTERVAL: DEFAULT_SCAN_INTERVAL // 60,
 }
 
 
@@ -49,6 +55,10 @@ class TestUserStep:
                 CONF_PASSWORD: "secret",
                 CONF_SITE_ID: "123456",
             },
+            options={
+                CONF_ENABLED_SENSORS: USER_INPUT[CONF_ENABLED_SENSORS],
+                CONF_SCAN_INTERVAL: USER_INPUT[CONF_SCAN_INTERVAL],
+            },
         )
 
     @pytest.mark.asyncio
@@ -80,3 +90,42 @@ class TestUserStep:
         await flow.async_step_user(None)
 
         flow.async_show_form.assert_called_once()
+
+
+class TestOptionsStep:
+    """Update credentials and polling settings."""
+
+    @pytest.mark.asyncio
+    async def test_updates_credentials_and_sensor_options(self):
+        flow = AtmoceOptionsFlow()
+        flow.hass = MagicMock()
+        flow.handler = "entry_id"
+        config_entry = MagicMock()
+        config_entry.options = {}
+        flow.hass.config_entries.async_get_known_entry.return_value = config_entry
+        flow.async_create_entry = MagicMock(return_value={"type": "create_entry"})
+        user_input = {
+            **USER_INPUT,
+            CONF_USERNAME: "updated@example.com",
+            CONF_ENABLED_SENSORS: ["grid_power"],
+            CONF_SCAN_INTERVAL: 5,
+        }
+
+        with patch(
+            "custom_components.atmoce.config_flow._validate_api_credentials",
+            return_value=None,
+        ):
+            await flow.async_step_init(user_input)
+
+        flow.hass.config_entries.async_update_entry.assert_called_once_with(
+            config_entry,
+            data={
+                CONF_USERNAME: "updated@example.com",
+                CONF_PASSWORD: "secret",
+                CONF_SITE_ID: "123456",
+            },
+            options={
+                CONF_ENABLED_SENSORS: ["grid_power"],
+                CONF_SCAN_INTERVAL: 5,
+            },
+        )

@@ -20,3 +20,7 @@ SOURCE_CLOUD = "Cloud API"
 CONF_SITE_ID = "site_id"
 CONF_USERNAME = "username"
 CONF_PASSWORD = "password"
+
+# Configuration keys used in config_entry.options
+CONF_ENABLED_SENSORS = "enabled_sensors"
+CONF_SCAN_INTERVAL = "scan_interval"

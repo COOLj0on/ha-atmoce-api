@@ -1,4 +1,5 @@
 """Shared fixtures for Atmoce Cloud API tests."""
+
 from unittest.mock import MagicMock
 
 import pytest
@@ -16,6 +17,7 @@ def mock_config_entry():
         "password": "secret",
         "site_id": "123456",
     }
+    entry.options = {}
     return entry
 
 

@@ -7,7 +7,23 @@
         "data": {
           "username": "Correo de la cuenta Atmoce",
           "password": "Contraseña de la cuenta Atmoce",
-          "site_id": "ID de la pasarela o del sitio"
+          "site_id": "ID de la pasarela o del sitio",
+          "enabled_sensors": "Sensores que se crearán",
+          "scan_interval": "Intervalo de consulta (minutos)"
+        }
+      }
+    },
+    "options": {
+      "step": {
+        "init": {
+          "title": "Ajustes de Atmoce Cloud",
+          "data": {
+            "username": "Correo de la cuenta Atmoce",
+            "password": "Contraseña de la cuenta Atmoce",
+            "site_id": "ID de la pasarela o del sitio",
+            "enabled_sensors": "Sensores que se crearán",
+            "scan_interval": "Intervalo de consulta (minutos)"
+          }
         }
       }
     },

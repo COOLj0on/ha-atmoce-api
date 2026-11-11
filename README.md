@@ -20,7 +20,13 @@ Le flux demande :
 
 - l'adresse e-mail ATMOCE (`username`) ;
 - le mot de passe ATMOCE (`password`) ;
-- l'identifiant du site ATMOCE (`site_id`).
+- l'identifiant du site ATMOCE (`site_id`) ;
+- les entités capteurs à créer ;
+- l'intervalle d'interrogation de l'API, en minutes (15 minutes par défaut,
+  réglable de 1 à 1 440 minutes).
+
+Ces deux derniers réglages sont également modifiables depuis les options de
+l'intégration après son ajout.
 
 L'authentification utilise :
 
@@ -67,7 +73,7 @@ avec le corps suivant :
 - source de données et compteur d'erreurs de connexion.
 
 L'API ATMOCE pouvant retourner des données avec plusieurs minutes de retard,
-la fréquence de mise à jour est volontairement fixée à 15 minutes.
+la fréquence de mise à jour est de 15 minutes par défaut.
 
 ## Development
 

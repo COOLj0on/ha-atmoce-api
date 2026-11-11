@@ -16,5 +16,57 @@
       "invalid_device_id": "L'identifiant de la passerelle ou du site doit être numérique.",
       "cannot_connect": "Impossible de se connecter à l'API Cloud Atmoce."
     }
+  },
+  "entity": {
+    "sensor": {
+      "grid_voltage": {"name": "Tension du réseau électrique"},
+      "daily_demand": {"name": "Demande énergétique du jour"},
+      "total_demand": {"name": "Demande énergétique totale"},
+      "grid_current": {"name": "Courant du réseau électrique"},
+      "grid_power": {"name": "Puissance du réseau électrique"},
+      "grid_energy_daily": {"name": "Énergie importée du réseau aujourd’hui"},
+      "grid_energy_total": {"name": "Énergie totale importée du réseau"},
+      "elec_sales_daily": {"name": "Énergie vendue aujourd’hui"},
+      "elec_sales_total": {"name": "Énergie totale vendue"},
+      "pv_power": {"name": "Puissance solaire"},
+      "pv_energy_daily": {"name": "Énergie solaire produite aujourd’hui"},
+      "pv_energy_total": {"name": "Énergie solaire produite au total"},
+      "pv_self_consumption_rate": {"name": "Taux d’autoconsommation solaire"},
+      "battery_soc": {"name": "Niveau de charge de la batterie"},
+      "battery_power": {"name": "Puissance de la batterie"},
+      "battery_status": {
+        "name": "État de la batterie",
+        "state": {
+          "charging": "En charge",
+          "discharging": "En décharge",
+          "idle": "Au repos"
+        }
+      },
+      "battery_mode": {
+        "name": "Mode de fonctionnement de la batterie",
+        "state": {
+          "self_consumption": "Autoconsommation",
+          "tou": "Tarif selon l’heure d’utilisation",
+          "remote_control": "Commande à distance"
+        }
+      },
+      "battery_dispatch_power": {"name": "Puissance demandée à la batterie"},
+      "battery_charged_daily": {"name": "Énergie stockée dans la batterie aujourd’hui"},
+      "battery_discharged_daily": {"name": "Énergie fournie par la batterie aujourd’hui"},
+      "battery_charged_total": {"name": "Énergie totale stockée dans la batterie"},
+      "battery_discharged_total": {"name": "Énergie totale fournie par la batterie"},
+      "autonomy_hours": {"name": "Autonomie estimée de la batterie"},
+      "station_status": {
+        "name": "État du système",
+        "state": {
+          "normal": "Fonctionnement normal",
+          "fault": "Défaut"
+        }
+      },
+      "active_source": {
+        "name": "Source des données"
+      },
+      "connection_errors": {"name": "Nombre d’erreurs de connexion"}
+    }
   }
 }

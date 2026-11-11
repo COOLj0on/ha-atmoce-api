@@ -26,12 +26,12 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .const import CONF_ENABLED_SENSORS, DOMAIN
 from .coordinator import AtmoceCoordinator
 
 
 @dataclass(frozen=True, kw_only=True)
-class AtmoceeSensorDescription:
+class AtmoceeSensorDescription(SensorEntityDescription):
     """Sensor description for Atmoce sensors.
 
     This dataclass holds the configuration for each sensor entity, providing
@@ -52,14 +52,14 @@ class AtmoceeSensorDescription:
     """
 
     key: str
-    name: str
-    data_key: str
-    device_class: str | None = None
-    entity_category: str | None = None
-    state_class: str | None = None
+    name: str | None = None
+    device_class: SensorDeviceClass | str | None = None  # type: ignore[assignment]
+    entity_category: EntityCategory | str | None = None  # type: ignore[assignment]
+    state_class: SensorStateClass | str | None = None
     native_unit_of_measurement: str | None = None
     suggested_display_precision: int | None = None
     icon: str | None = None
+    data_key: str
     value_map: dict[int, str] | None = None
 
 
@@ -310,15 +310,21 @@ async def async_setup_entry(
         async_add_entities: Callback to add entities.
     """
     coordinator: AtmoceCoordinator = hass.data[DOMAIN][entry.entry_id]
+    enabled_sensors = entry.options.get(
+        CONF_ENABLED_SENSORS,
+        [description.key for description in SENSOR_DESCRIPTIONS],
+    )
     async_add_entities(
-        AtmoceSensor(coordinator, description) for description in SENSOR_DESCRIPTIONS
+        AtmoceSensor(coordinator, description)
+        for description in SENSOR_DESCRIPTIONS
+        if description.key in enabled_sensors
     )
 
 
 class AtmoceSensor(CoordinatorEntity[AtmoceCoordinator], SensorEntity):
     """A single Atmoce sensor entity."""
 
-    entity_description: AtmoceeSensorDescription  # type: ignore[assignment]
+    entity_description: AtmoceeSensorDescription
     _attr_has_entity_name = True
     _attr_device_class: SensorDeviceClass | None
     _attr_entity_category: EntityCategory | None
